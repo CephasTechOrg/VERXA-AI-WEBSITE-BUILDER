@@ -4,6 +4,7 @@ import PortfolioForm from './forms/PortfolioForm'
 import BusinessForm from './forms/BusinessForm'
 import BlogForm from './forms/BlogForm'
 import NewsForm from './forms/NewsForm'
+import EventForm from './forms/EventForm'
 import ArticleForm from './forms/ArticleForm'
 import './WebsiteTypeSelector.css'
 
@@ -14,6 +15,7 @@ const WebsiteTypeSelector = () => {
         { id: 'business', name: 'Business', description: 'Professional company website', icon: <i className="fas fa-building type-icon-fa" aria-hidden="true"></i> },
         { id: 'blog', name: 'Blog', description: 'Share your thoughts and articles', icon: <i className="fas fa-blog type-icon-fa" aria-hidden="true"></i> },
         { id: 'news', name: 'News', description: 'Modern newsroom with breaking stories', icon: <i className="fas fa-newspaper type-icon-fa" aria-hidden="true"></i> },
+        { id: 'event', name: 'Event', description: 'Conferences, concerts, weddings, and more', icon: <i className="fas fa-calendar-day type-icon-fa" aria-hidden="true"></i> },
         { id: 'article', name: 'Article', description: 'Long-form editorial or magazine story', icon: <i className="fas fa-scroll type-icon-fa" aria-hidden="true"></i> }
     ])
 
@@ -33,8 +35,9 @@ const WebsiteTypeSelector = () => {
                 {state.websiteType.id === 'business' && <BusinessForm />}
                 {state.websiteType.id === 'blog' && <BlogForm />}
                 {state.websiteType.id === 'news' && <NewsForm />}
+                {state.websiteType.id === 'event' && <EventForm />}
                 {state.websiteType.id === 'article' && <ArticleForm />}
-                {state.websiteType.id !== 'portfolio' && state.websiteType.id !== 'business' && state.websiteType.id !== 'blog' && state.websiteType.id !== 'news' && state.websiteType.id !== 'article' && (
+                {state.websiteType.id !== 'portfolio' && state.websiteType.id !== 'business' && state.websiteType.id !== 'blog' && state.websiteType.id !== 'news' && state.websiteType.id !== 'event' && state.websiteType.id !== 'article' && (
                     <div className="coming-soon">
                         <h2>Creating {state.websiteType.name} Website</h2>
                         <p>?? {state.websiteType.name} website form coming soon!</p>
