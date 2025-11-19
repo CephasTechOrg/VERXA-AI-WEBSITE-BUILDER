@@ -1,0 +1,196 @@
+Here you go — a **single code-fenced `projectoverview.txt`** file containing your complete, polished project overview.
+
+```txt
+AI WEBSITE GENERATOR — COMPLETE PROJECT OVERVIEW
+===============================================
+
+🎯 PROJECT PURPOSE & VISION
+---------------------------
+Goal: Build an AI-powered platform that generates complete, production-ready websites from user input in under 2 minutes.
+
+Core Concept:
+Users choose a website type → fill out a form → system sends structured prompts to DeepSeek → receives complete HTML/CSS/JS → displays a full preview and allows download.
+
+
+🏗️ SYSTEM ARCHITECTURE
+-----------------------
+High-Level Architecture:
+User Input → React Frontend → Express Backend → DeepSeek API → Generated Website → Preview & Download
+
+Technology Stack:
+- Frontend: React + Vite + CSS3
+- Backend: Node.js + Express
+- AI Service: DeepSeek API
+- State Mgmt: React Context API
+- Styling: Custom CSS with CSS Variables
+
+
+🔀 DATA FLOW & PROCESS PIPELINE
+-------------------------------
+1. USER JOURNEY FLOW
+Landing Page → Website Type Selection → Dynamic Form → AI Generation → Preview Page → Download Website
+
+2. FRONTEND PROCESS FLOW
+Step 1: Type Selection  
+User selects e.g. `portfolio` → `setWebsiteType('portfolio')` → navigate to form
+
+Step 2: Form Handling  
+User fills inputs → state updated → validation running in real time
+
+Step 3: Generation Request  
+User clicks “Generate” → show loading animation → send payload to backend
+
+Step 4: Result Handling  
+Response received → store generated website → navigate to preview page
+
+3. BACKEND PROCESS FLOW
+Step 1: Receive Request  
+POST /api/website/generate with:
+{
+  websiteType,
+  userData,
+  colorScheme
+}
+
+Step 2: Prompt Construction  
+Base Prompt + User Data + Theme → Final AI prompt
+
+Step 3: DeepSeek API Call  
+System Prompt: “Generate complete, production-ready website code.”  
+Parameters: max_tokens 8000, temp 0.7
+
+Step 4: Response Validation  
+Check if HTML complete → auto-fix missing tags → sanitize output → send to frontend
+
+
+🧠 CORE SYSTEM LOGIC
+--------------------
+1. PROMPT ENGINEERING SYSTEM
+Portfolio base prompt requires:  
+HEADER, HERO, ABOUT, SKILLS, PROJECTS, CONTACT, FOOTER.
+
+Technical Requirements:
+- Modern CSS (Grid/Flexbox/Variables)
+- Responsive layout
+- Glassmorphism effects
+- Dark/Light mode
+- All tags must be closed
+
+User Data Integration:
+"USER DATA: ${JSON.stringify(userData)}"
+
+2. AI RESPONSE HANDLING LOGIC
+Code completeness check:  
+- Must contain <!DOCTYPE html>, </html>, </body>  
+- Must not end mid-CSS or mid-tag
+
+Auto-Fix:
+If incomplete → add missing wrappers → close open tags → return safe HTML
+
+3. ERROR HANDLING SYSTEM
+Frontend:
+- Timeouts → retry option  
+- User-friendly alerts  
+- Fallback preview
+
+Backend:
+- DeepSeek error logging  
+- Prompt trimming on token overflow  
+- Structured error responses
+
+
+🎨 UI/UX BEHAVIOR
+-----------------
+1. Loading States
+- Disabled form  
+- Bubble animation  
+- Progress indicator (Steps 1–4)  
+- Estimated time (1–2 minutes)
+
+2. User Feedback System
+- Success → green check / confetti  
+- Error → red alert with fix options  
+- Live validation on forms
+
+3. Responsive Behavior
+Breakpoints:
+- Desktop: 1200px+
+- Tablet: 768–1199px
+- Mobile: <768px
+
+
+🔧 TECHNICAL IMPLEMENTATION DETAILS
+-----------------------------------
+1. STATE MANAGEMENT
+Initial Context:
+{
+  websiteType: null,
+  userData: {},
+  colorScheme: 'modern-blue',
+  generatedWebsite: null,
+  loading: false,
+  step: 'home',
+  error: null
+}
+
+Actions:
+- SET_WEBSITE_TYPE  
+- UPDATE_USER_DATA  
+- GENERATE_WEBSITE_START  
+- GENERATE_WEBSITE_SUCCESS  
+- GENERATE_WEBSITE_ERROR  
+
+2. API ROUTES
+GET  /api/health  
+GET  /api/prompts/types  
+GET  /api/prompts/base/:type  
+POST /api/website/generate  
+
+Response Example:
+{
+  success: true,
+  data: {
+    html: "<!DOCTYPE html>...",
+    downloadUrl: "/api/website/download/uuid",
+    metadata: { websiteType, generatedAt, codeLength }
+  }
+}
+
+3. FILE GENERATION SYSTEM
+- Temporary in-memory storage via Map  
+- Auto cleanup every 1 hour  
+- Download via temporary routes  
+
+
+⚡ PERFORMANCE & OPTIMIZATION
+-----------------------------
+1. TIMEOUTS
+Backend DeepSeek Timeout: 120s  
+Frontend Timeout: 300s
+
+2. ERROR RECOVERY
+Fallback layers:
+1. Full AI generation  
+2. Auto-fix HTML  
+3. Pre-built fallback template  
+4. Error page + retry button
+
+3. UX OPTIMIZATION
+- Form persistence  
+- Cached preview  
+- Fast regeneration  
+- Clear feedback at every step  
+
+
+🛡️ SECURITY & VALIDATION
+--------------------------
+1. INPUT VALIDATION
+Frontend:
+- Required fields  
+- Valid URLs  
+- Valid emails  
+- Max length checks  
+
+Backend:
+- express-validator
+```

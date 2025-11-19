@@ -1,0 +1,75 @@
+.website-type-selector {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.selector-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.selector-header h2 {
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+    font-size: 2.5rem;
+}
+
+.selector-header p {
+    color: #4a5568;
+    font-size: 1.2rem;
+}
+
+.website-types-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.website-type-card {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.website-type-card:hover {
+    transform: translateY(-5px);
+    border-color: #667eea;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.type-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.website-type-card h3 {
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+}
+
+.website-type-card p {
+    color: #4a5568;
+    line-height: 1.5;
+}
+
+.generator-view {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .website-types-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .selector-header h2 {
+        font-size: 2rem;
+    }
+}
