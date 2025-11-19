@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useApp } from '../../contexts/AppContext'
 import ColorPicker from './ColorPicker'
+import GenerationProgress from './GenerationProgress'
 import './PortfolioForm.css'
 
 const PortfolioForm = () => {
@@ -183,28 +184,15 @@ const PortfolioForm = () => {
             </div>
 
             {state.loading && (
-                <div className="generation-loading">
-                    <div className="loading-content">
-                        <div className="ai-loader">
-                            <div className="ai-bubble ai-bubble-1"></div>
-                            <div className="ai-bubble ai-bubble-2"></div>
-                            <div className="ai-bubble ai-bubble-3"></div>
-                        </div>
-                        <h3>AI is generating your website...</h3>
-                        <p>This may take up to 2 minutes. Please don't close this page.</p>
-                        <div className="loading-progress">
-                            <div className="progress-bar">
-                                <div className="progress-fill"></div>
-                            </div>
-                            <div className="loading-steps">
-                                <span className="step active">Processing your data</span>
-                                <span className="step">Generating content</span>
-                                <span className="step">Creating design</span>
-                                <span className="step">Finalizing website</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <GenerationProgress
+                    description="This may take up to 2 minutes. Please don't close this page."
+                    steps={[
+                        'Processing your data',
+                        'Generating content',
+                        'Creating design',
+                        'Finalizing website'
+                    ]}
+                />
             )}
 
             <form onSubmit={handleSubmit}>

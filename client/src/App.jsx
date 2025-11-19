@@ -43,7 +43,7 @@ function AppContent() {
                                 onClick={() => actions.goBack('home')}
                                 className="btn btn-secondary back-btn"
                             >
-                                â† Back to Selection
+                                Back to Selection
                             </button>
                             {state.websiteType?.id === 'portfolio' && <PortfolioForm />}
                             {state.websiteType?.id === 'business' && <BusinessForm />}

@@ -1,6 +1,7 @@
 ﻿import React, { useState } from 'react'
 import { useApp } from '../../contexts/AppContext'
 import ColorPicker from './ColorPicker'
+import GenerationProgress from './GenerationProgress'
 import './PortfolioForm.css'
 
 const ArticleForm = () => {
@@ -122,28 +123,16 @@ const ArticleForm = () => {
             </div>
 
             {state.loading && (
-                <div className="generation-loading">
-                    <div className="loading-content">
-                        <div className="ai-loader">
-                            <div className="ai-bubble ai-bubble-1"></div>
-                            <div className="ai-bubble ai-bubble-2"></div>
-                            <div className="ai-bubble ai-bubble-3"></div>
-                        </div>
-                        <h3>AI is crafting your narrative...</h3>
-                        <p>This may take up to 2 minutes. Please keep this tab open.</p>
-                        <div className="loading-progress">
-                            <div className="progress-bar">
-                                <div className="progress-fill"></div>
-                            </div>
-                            <div className="loading-steps">
-                                <span className="step active">Structuring story</span>
-                                <span className="step">Designing layout</span>
-                                <span className="step">Applying visuals</span>
-                                <span className="step">Finalizing build</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <GenerationProgress
+                    title="AI is crafting your narrative..."
+                    description="This may take up to 2 minutes. Please keep this tab open."
+                    steps={[
+                        'Structuring story',
+                        'Designing layout',
+                        'Applying visuals',
+                        'Finalizing build'
+                    ]}
+                />
             )}
 
             <form onSubmit={handleSubmit}>

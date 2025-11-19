@@ -1,6 +1,7 @@
 ﻿import React, { useState } from 'react'
 import { useApp } from '../../contexts/AppContext'
 import ColorPicker from './ColorPicker'
+import GenerationProgress from './GenerationProgress'
 import './PortfolioForm.css'
 
 const BlogForm = () => {
@@ -141,28 +142,14 @@ const BlogForm = () => {
             </div>
 
             {state.loading && (
-                <div className="generation-loading">
-                    <div className="loading-content">
-                        <div className="ai-loader">
-                            <div className="ai-bubble ai-bubble-1"></div>
-                            <div className="ai-bubble ai-bubble-2"></div>
-                            <div className="ai-bubble ai-bubble-3"></div>
-                        </div>
-                        <h3>AI is generating your website...</h3>
-                        <p>This may take up to 2 minutes. Please don't close this page.</p>
-                        <div className="loading-progress">
-                            <div className="progress-bar">
-                                <div className="progress-fill"></div>
-                            </div>
-                            <div className="loading-steps">
-                                <span className="step active">Processing content</span>
-                                <span className="step">Building layout</span>
-                                <span className="step">Styling pages</span>
-                                <span className="step">Finalizing site</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <GenerationProgress
+                    steps={[
+                        'Processing content',
+                        'Building layout',
+                        'Styling pages',
+                        'Finalizing site'
+                    ]}
+                />
             )}
             <form onSubmit={handleSubmit}>
                 <div className="form-section">
