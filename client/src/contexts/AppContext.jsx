@@ -10,7 +10,10 @@ const initialState = {
     generatedWebsite: null,
     loading: false,
     step: 'home',
-    error: null
+    error: null,
+    lastGenerationRequest: null,
+    deployment: null,
+    deploymentLoading: false
 };
 
 function appReducer(state, action) {
@@ -57,9 +60,37 @@ function appReducer(state, action) {
                 error: action.payload
             };
 
+        case 'DEPLOYMENT_START':
+            return {
+                ...state,
+                deploymentLoading: true,
+                error: null
+            };
+
+        case 'DEPLOYMENT_SUCCESS':
+            return {
+                ...state,
+                deploymentLoading: false,
+                deployment: action.payload,
+                error: null
+            };
+
+        case 'DEPLOYMENT_ERROR':
+            return {
+                ...state,
+                deploymentLoading: false,
+                error: action.payload
+            };
+
         case 'RESET_GENERATOR':
             return {
                 ...initialState
+            };
+
+        case 'SET_LAST_GENERATION_REQUEST':
+            return {
+                ...state,
+                lastGenerationRequest: action.payload
             };
 
         case 'GO_BACK':
@@ -77,19 +108,43 @@ function appReducer(state, action) {
 export function AppProvider({ children }) {
     const [state, dispatch] = useReducer(appReducer, initialState);
 
-    const generateWebsite = async (websiteType, userData, colorScheme) => {
+    const generateWebsite = async (websiteType, userData, colorScheme, customizations, uploadedImages) => {
         try {
-            console.log('📡 Sending generation request...')
-            const response = await websiteAPI.generate({
+            const payload = {
                 websiteType,
                 userData,
-                colorScheme
-            });
-            console.log('📨 Received response:', response)
+                colorScheme,
+                customizations,
+                uploadedImages // Include uploaded images
+            };
+
+            dispatch({ type: 'SET_LAST_GENERATION_REQUEST', payload });
+
+            console.log('Sending generation request...');
+            const response = await websiteAPI.generate(payload);
+            console.log('Received response:', response);
             return response;
         } catch (error) {
-            console.error('💥 API Error:', error)
+            console.error('API Error:', error);
             throw new Error(error.message || 'Failed to generate website');
+        }
+    };
+
+    const deployWebsite = async (html, websiteType, userData) => {
+        try {
+            console.log('🚀 Deploying to Netlify (no regeneration)...');
+            const payload = {
+                html,
+                websiteType,
+                userData
+            };
+
+            const response = await websiteAPI.deploy(payload);
+            console.log('Deployment successful:', response);
+            return response;
+        } catch (error) {
+            console.error('Deployment error:', error);
+            throw new Error(error.message || 'Failed to deploy website');
         }
     };
 
@@ -100,9 +155,13 @@ export function AppProvider({ children }) {
         generateWebsiteStart: () => dispatch({ type: 'GENERATE_WEBSITE_START' }),
         generateWebsiteSuccess: (website) => dispatch({ type: 'GENERATE_WEBSITE_SUCCESS', payload: website }),
         generateWebsiteError: (error) => dispatch({ type: 'GENERATE_WEBSITE_ERROR', payload: error }),
+        deploymentStart: () => dispatch({ type: 'DEPLOYMENT_START' }),
+        deploymentSuccess: (data) => dispatch({ type: 'DEPLOYMENT_SUCCESS', payload: data }),
+        deploymentError: (error) => dispatch({ type: 'DEPLOYMENT_ERROR', payload: error }),
         resetGenerator: () => dispatch({ type: 'RESET_GENERATOR' }),
         goBack: (step) => dispatch({ type: 'GO_BACK', payload: step }),
-        generateWebsite
+        generateWebsite,
+        deployWebsite
     };
 
     return (

@@ -6,6 +6,7 @@ import './PortfolioForm.css'
 
 const PortfolioForm = () => {
     const { state, actions } = useApp()
+    const [uploadedImages, setUploadedImages] = useState({}) // { fieldName: { name, base64 } }
     const [formData, setFormData] = useState({
         personalInfo: {
             name: '',
@@ -141,6 +142,40 @@ const PortfolioForm = () => {
         }
     }
 
+    const handleImageUpload = (e, fieldName) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        // Only accept image files
+        if (!file.type.startsWith('image/')) {
+            alert('Please select a valid image file')
+            return
+        }
+
+        // Read file as base64
+        const reader = new FileReader()
+        reader.onload = (event) => {
+            const base64 = event.target?.result
+            setUploadedImages(prev => ({
+                ...prev,
+                [fieldName]: {
+                    name: file.name,
+                    base64,
+                    size: file.size
+                }
+            }))
+        }
+        reader.readAsDataURL(file)
+    }
+
+    const removeUploadedImage = (fieldName) => {
+        setUploadedImages(prev => {
+            const next = { ...prev }
+            delete next[fieldName]
+            return next
+        })
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault()
 
@@ -157,7 +192,9 @@ const PortfolioForm = () => {
             const result = await actions.generateWebsite(
                 state.websiteType.id,
                 formData,
-                state.colorScheme
+                state.colorScheme,
+                undefined, // customizations
+                uploadedImages // Pass uploaded images
             )
             console.log('✅ Generation successful:', result)
             actions.generateWebsiteSuccess(result)
@@ -273,6 +310,49 @@ const PortfolioForm = () => {
                                 placeholder="New York, USA"
                                 disabled={state.loading}
                             />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Image Uploads */}
+                <div className="form-section">
+                    <h3>🖼️ Upload Images</h3>
+                    <p style={{ color: '#666', marginBottom: '1rem', fontSize: '0.9rem' }}>
+                        Upload images instead of providing URLs. These will be included in your deployed website.
+                    </p>
+
+                    <div className="form-grid">
+                        <div className="form-group full-width">
+                            <label>Profile Picture</label>
+                            <div className="image-upload">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => handleImageUpload(e, 'profileImage')}
+                                    disabled={state.loading}
+                                    id="profileImage-input"
+                                    style={{ display: 'none' }}
+                                />
+                                <label htmlFor="profileImage-input" className="upload-label">
+                                    {uploadedImages.profileImage ? (
+                                        <span>✓ {uploadedImages.profileImage.name}</span>
+                                    ) : (
+                                        <span>📤 Click to upload image</span>
+                                    )}
+                                </label>
+                                {uploadedImages.profileImage && (
+                                    <div className="upload-preview">
+                                        <img src={uploadedImages.profileImage.base64} alt="Profile" style={{ maxHeight: '100px' }} />
+                                        <button
+                                            type="button"
+                                            onClick={() => removeUploadedImage('profileImage')}
+                                            className="btn-remove-image"
+                                        >
+                                            ✕ Remove
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -39,13 +39,14 @@ const GenerationProgress = ({
         : 0
 
     return (
-        <div className="generation-loading">
-            <div className="loading-content">
-                <div className="ai-loader">
-                    <div className="ai-bubble ai-bubble-1"></div>
-                    <div className="ai-bubble ai-bubble-2"></div>
-                    <div className="ai-bubble ai-bubble-3"></div>
-                </div>
+        <div className="generation-overlay">
+            <div className="generation-loading">
+                <div className="loading-content">
+                    <div className="ai-loader">
+                        <div className="ai-bubble ai-bubble-1"></div>
+                        <div className="ai-bubble ai-bubble-2"></div>
+                        <div className="ai-bubble ai-bubble-3"></div>
+                    </div>
                 <h3>{title}</h3>
                 <p>{description}</p>
                 <div className="loading-progress">
@@ -65,6 +66,7 @@ const GenerationProgress = ({
                             </span>
                         ))}
                     </div>
+                </div>
                 </div>
             </div>
         </div>
