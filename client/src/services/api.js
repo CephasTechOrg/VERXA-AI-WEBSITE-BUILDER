@@ -54,7 +54,6 @@ generationApi.interceptors.response.use(
 
 export const websiteAPI = {
     generate: (data) => generationApi.post('/website/generate', data), // Use special instance
-    deploy: (data) => generationApi.post('/website/deploy', data),
 };
 
 export const promptsAPI = {

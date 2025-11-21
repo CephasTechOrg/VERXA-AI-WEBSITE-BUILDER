@@ -4,7 +4,7 @@ const validateWebsiteRequest = (req, res, next) => {
     const errors = [];
 
     // Validate website type
-    const validWebsiteTypes = ['portfolio', 'business', 'blog', 'event', 'news'];
+    const validWebsiteTypes = ['portfolio', 'business', 'blog', 'event', 'news', 'article'];
     if (!websiteType || !validWebsiteTypes.includes(websiteType)) {
         errors.push('Invalid website type');
     }

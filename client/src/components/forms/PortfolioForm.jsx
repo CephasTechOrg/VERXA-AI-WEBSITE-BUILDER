@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
 import { useApp } from '../../contexts/AppContext'
 import ColorPicker from './ColorPicker'
-import GenerationProgress from './GenerationProgress'
+import ImageUploadInput from './ImageUploadInput'
 import './PortfolioForm.css'
 
 const PortfolioForm = () => {
     const { state, actions } = useApp()
-    const [uploadedImages, setUploadedImages] = useState({}) // { fieldName: { name, base64 } }
     const [formData, setFormData] = useState({
         personalInfo: {
             name: '',
@@ -142,40 +141,6 @@ const PortfolioForm = () => {
         }
     }
 
-    const handleImageUpload = (e, fieldName) => {
-        const file = e.target.files?.[0]
-        if (!file) return
-
-        // Only accept image files
-        if (!file.type.startsWith('image/')) {
-            alert('Please select a valid image file')
-            return
-        }
-
-        // Read file as base64
-        const reader = new FileReader()
-        reader.onload = (event) => {
-            const base64 = event.target?.result
-            setUploadedImages(prev => ({
-                ...prev,
-                [fieldName]: {
-                    name: file.name,
-                    base64,
-                    size: file.size
-                }
-            }))
-        }
-        reader.readAsDataURL(file)
-    }
-
-    const removeUploadedImage = (fieldName) => {
-        setUploadedImages(prev => {
-            const next = { ...prev }
-            delete next[fieldName]
-            return next
-        })
-    }
-
     const handleSubmit = async (e) => {
         e.preventDefault()
 
@@ -193,8 +158,7 @@ const PortfolioForm = () => {
                 state.websiteType.id,
                 formData,
                 state.colorScheme,
-                undefined, // customizations
-                uploadedImages // Pass uploaded images
+                state.uploadedAssets
             )
             console.log('✅ Generation successful:', result)
             actions.generateWebsiteSuccess(result)
@@ -221,15 +185,28 @@ const PortfolioForm = () => {
             </div>
 
             {state.loading && (
-                <GenerationProgress
-                    description="This may take up to 2 minutes. Please don't close this page."
-                    steps={[
-                        'Processing your data',
-                        'Generating content',
-                        'Creating design',
-                        'Finalizing website'
-                    ]}
-                />
+                <div className="generation-loading">
+                    <div className="loading-content">
+                        <div className="ai-loader">
+                            <div className="ai-bubble ai-bubble-1"></div>
+                            <div className="ai-bubble ai-bubble-2"></div>
+                            <div className="ai-bubble ai-bubble-3"></div>
+                        </div>
+                        <h3>AI is generating your website...</h3>
+                        <p>This may take up to 2 minutes. Please don't close this page.</p>
+                        <div className="loading-progress">
+                            <div className="progress-bar">
+                                <div className="progress-fill"></div>
+                            </div>
+                            <div className="loading-steps">
+                                <span className="step active">Processing your data</span>
+                                <span className="step">Generating content</span>
+                                <span className="step">Creating design</span>
+                                <span className="step">Finalizing website</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
 
             <form onSubmit={handleSubmit}>
@@ -270,16 +247,14 @@ const PortfolioForm = () => {
                                 disabled={state.loading}
                             />
                         </div>
-                        <div className="form-group full-width">
-                            <label>Profile Image URL</label>
-                            <input
-                                type="url"
-                                value={formData.personalInfo.profileImage}
-                                onChange={(e) => handleInputChange('personalInfo', 'profileImage', e.target.value)}
-                                placeholder="https://example.com/your-photo.jpg"
-                                disabled={state.loading}
-                            />
-                        </div>
+                        <ImageUploadInput
+                            label="Profile Image"
+                            value={formData.personalInfo.profileImage}
+                            onChange={(value) => handleInputChange('personalInfo', 'profileImage', value)}
+                            placeholder="Upload or paste an image link"
+                            disabled={state.loading}
+                            hint="Upload your photo or paste a link. We'll host it for your generated site."
+                        />
                         <div className="form-group">
                             <label>Email *</label>
                             <input
@@ -310,49 +285,6 @@ const PortfolioForm = () => {
                                 placeholder="New York, USA"
                                 disabled={state.loading}
                             />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Image Uploads */}
-                <div className="form-section">
-                    <h3>🖼️ Upload Images</h3>
-                    <p style={{ color: '#666', marginBottom: '1rem', fontSize: '0.9rem' }}>
-                        Upload images instead of providing URLs. These will be included in your deployed website.
-                    </p>
-
-                    <div className="form-grid">
-                        <div className="form-group full-width">
-                            <label>Profile Picture</label>
-                            <div className="image-upload">
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => handleImageUpload(e, 'profileImage')}
-                                    disabled={state.loading}
-                                    id="profileImage-input"
-                                    style={{ display: 'none' }}
-                                />
-                                <label htmlFor="profileImage-input" className="upload-label">
-                                    {uploadedImages.profileImage ? (
-                                        <span>✓ {uploadedImages.profileImage.name}</span>
-                                    ) : (
-                                        <span>📤 Click to upload image</span>
-                                    )}
-                                </label>
-                                {uploadedImages.profileImage && (
-                                    <div className="upload-preview">
-                                        <img src={uploadedImages.profileImage.base64} alt="Profile" style={{ maxHeight: '100px' }} />
-                                        <button
-                                            type="button"
-                                            onClick={() => removeUploadedImage('profileImage')}
-                                            className="btn-remove-image"
-                                        >
-                                            ✕ Remove
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -455,16 +387,14 @@ const PortfolioForm = () => {
                                         disabled={state.loading}
                                     />
                                 </div>
-                                <div className="form-group">
-                                    <label>Project Image URL</label>
-                                    <input
-                                        type="url"
-                                        value={project.image}
-                                        onChange={(e) => handleArrayChange('projects', index, 'image', e.target.value)}
-                                        placeholder="https://example.com/project-image.jpg"
-                                        disabled={state.loading}
-                                    />
-                                </div>
+                                <ImageUploadInput
+                                    label="Project Image"
+                                    value={project.image}
+                                    onChange={(value) => handleArrayChange('projects', index, 'image', value)}
+                                    placeholder="Upload or paste a project image"
+                                    disabled={state.loading}
+                                    hint="Add a visual highlight for this project."
+                                />
                                 <div className="form-group full-width">
                                     <label>Project Description *</label>
                                     <textarea

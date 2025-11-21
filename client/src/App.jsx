@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import { AppProvider, useApp } from './contexts/AppContext'
 import WebsiteTypeSelector from './components/WebsiteTypeSelector'
 import PortfolioForm from './components/forms/PortfolioForm'
@@ -43,7 +43,7 @@ function AppContent() {
                                 onClick={() => actions.goBack('home')}
                                 className="btn btn-secondary back-btn"
                             >
-                                Back to Selection
+                                {'< Back to Selection'}
                             </button>
                             {state.websiteType?.id === 'portfolio' && <PortfolioForm />}
                             {state.websiteType?.id === 'business' && <BusinessForm />}
@@ -54,7 +54,7 @@ function AppContent() {
                             {state.websiteType && !['portfolio', 'business', 'blog', 'news', 'event', 'article'].includes(state.websiteType.id) && (
                                 <div className="coming-soon">
                                     <h2>Creating {state.websiteType?.name} Website</h2>
-                                    <p>🚧 {state.websiteType?.name} website form coming soon!</p>
+                                    <p>Heads up: {state.websiteType?.name} website form is coming soon.</p>
                                     <p>For now, try the Portfolio website type.</p>
                                 </div>
                             )}
@@ -68,9 +68,3 @@ function AppContent() {
 }
 
 export default App
-
-
-
-
-
-

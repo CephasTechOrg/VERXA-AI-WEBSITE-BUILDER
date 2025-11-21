@@ -1,7 +1,7 @@
 ﻿import React, { useState } from 'react'
 import { useApp } from '../../contexts/AppContext'
 import ColorPicker from './ColorPicker'
-import GenerationProgress from './GenerationProgress'
+import ImageUploadInput from './ImageUploadInput'
 import './PortfolioForm.css'
 
 const ArticleForm = () => {
@@ -102,7 +102,8 @@ const ArticleForm = () => {
             const result = await actions.generateWebsite(
                 state.websiteType.id,
                 formData,
-                state.colorScheme
+                state.colorScheme,
+                state.uploadedAssets
             )
             actions.generateWebsiteSuccess(result)
         } catch (error) {
@@ -123,16 +124,28 @@ const ArticleForm = () => {
             </div>
 
             {state.loading && (
-                <GenerationProgress
-                    title="AI is crafting your narrative..."
-                    description="This may take up to 2 minutes. Please keep this tab open."
-                    steps={[
-                        'Structuring story',
-                        'Designing layout',
-                        'Applying visuals',
-                        'Finalizing build'
-                    ]}
-                />
+                <div className="generation-loading">
+                    <div className="loading-content">
+                        <div className="ai-loader">
+                            <div className="ai-bubble ai-bubble-1"></div>
+                            <div className="ai-bubble ai-bubble-2"></div>
+                            <div className="ai-bubble ai-bubble-3"></div>
+                        </div>
+                        <h3>AI is crafting your narrative...</h3>
+                        <p>This may take up to 2 minutes. Please keep this tab open.</p>
+                        <div className="loading-progress">
+                            <div className="progress-bar">
+                                <div className="progress-fill"></div>
+                            </div>
+                            <div className="loading-steps">
+                                <span className="step active">Structuring story</span>
+                                <span className="step">Designing layout</span>
+                                <span className="step">Applying visuals</span>
+                                <span className="step">Finalizing build</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
 
             <form onSubmit={handleSubmit}>
@@ -233,16 +246,14 @@ const ArticleForm = () => {
                                 disabled={state.loading}
                             />
                         </div>
-                        <div className="form-group">
-                            <label>Hero Image URL</label>
-                            <input
-                                type="url"
-                                value={formData.articleInfo.heroImage}
-                                onChange={(e) => handleInputChange('articleInfo', 'heroImage', e.target.value)}
-                                placeholder="https://images.example.com/feature.jpg"
-                                disabled={state.loading}
-                            />
-                        </div>
+                        <ImageUploadInput
+                            label="Hero Image"
+                            value={formData.articleInfo.heroImage}
+                            onChange={(value) => handleInputChange('articleInfo', 'heroImage', value)}
+                            placeholder="Upload or paste a hero image"
+                            disabled={state.loading}
+                            hint="Lead visual for the article hero."
+                        />
                         <div className="form-group">
                             <label>Hero Caption</label>
                             <input
@@ -324,13 +335,13 @@ const ArticleForm = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Supporting Image</label>
-                                    <input
-                                        type="url"
+                                    <ImageUploadInput
+                                        label="Supporting Image"
                                         value={section.supportingImage}
-                                        onChange={(e) => handleArrayChange('sections', index, 'supportingImage', e.target.value)}
-                                        placeholder="https://images.example.com/detail.jpg"
+                                        onChange={(value) => handleArrayChange('sections', index, 'supportingImage', value)}
+                                        placeholder="Upload or paste a supporting image"
                                         disabled={state.loading}
+                                        hint="Inline image for this section."
                                     />
                                 </div>
                                 <div className="form-group">
@@ -443,16 +454,14 @@ const ArticleForm = () => {
                                 disabled={state.loading}
                             />
                         </div>
-                        <div className="form-group">
-                            <label>Headshot URL</label>
-                            <input
-                                type="url"
-                                value={formData.author.headshot}
-                                onChange={(e) => handleInputChange('author', 'headshot', e.target.value)}
-                                placeholder="https://images.example.com/avery.jpg"
-                                disabled={state.loading}
-                            />
-                        </div>
+                        <ImageUploadInput
+                            label="Headshot"
+                            value={formData.author.headshot}
+                            onChange={(value) => handleInputChange('author', 'headshot', value)}
+                            placeholder="Upload or paste an author headshot"
+                            disabled={state.loading}
+                            hint="Used in the author bio."
+                        />
                         <div className="form-group">
                             <label>Primary Social / Portfolio</label>
                             <input

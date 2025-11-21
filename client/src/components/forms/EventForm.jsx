@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useApp } from '../../contexts/AppContext'
 import ColorPicker from './ColorPicker'
-import GenerationProgress from './GenerationProgress'
+import ImageUploadInput from './ImageUploadInput'
 import './PortfolioForm.css'
 
 const EventForm = () => {
@@ -101,7 +101,8 @@ const EventForm = () => {
             const result = await actions.generateWebsite(
                 state.websiteType.id,
                 formData,
-                state.colorScheme
+                state.colorScheme,
+                state.uploadedAssets
             )
             actions.generateWebsiteSuccess(result)
         } catch (error) {
@@ -124,16 +125,28 @@ const EventForm = () => {
             </div>
 
             {state.loading && (
-                <GenerationProgress
-                    title="AI is preparing your event experience..."
-                    description="This usually takes under 2 minutes. Please keep this tab open."
-                    steps={[
-                        'Gathering details',
-                        'Designing layout',
-                        'Adding interactions',
-                        'Finalizing site'
-                    ]}
-                />
+                <div className="generation-loading">
+                    <div className="loading-content">
+                        <div className="ai-loader">
+                            <div className="ai-bubble ai-bubble-1"></div>
+                            <div className="ai-bubble ai-bubble-2"></div>
+                            <div className="ai-bubble ai-bubble-3"></div>
+                        </div>
+                        <h3>AI is preparing your event experience...</h3>
+                        <p>This usually takes under 2 minutes. Please keep this tab open.</p>
+                        <div className="loading-progress">
+                            <div className="progress-bar">
+                                <div className="progress-fill"></div>
+                            </div>
+                            <div className="loading-steps">
+                                <span className="step active">Gathering details</span>
+                                <span className="step">Designing layout</span>
+                                <span className="step">Adding interactions</span>
+                                <span className="step">Finalizing site</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
 
             <form onSubmit={handleSubmit}>
@@ -250,16 +263,14 @@ const EventForm = () => {
                                 disabled={state.loading}
                             />
                         </div>
-                        <div className="form-group full-width">
-                            <label>Hero Image URL</label>
-                            <input
-                                type="url"
-                                value={formData.eventInfo.heroImage}
-                                onChange={(e) => handleInputChange('eventInfo', 'heroImage', e.target.value)}
-                                placeholder="https://images.example.com/event-hero.jpg"
-                                disabled={state.loading}
-                            />
-                        </div>
+                        <ImageUploadInput
+                            label="Hero Image"
+                            value={formData.eventInfo.heroImage}
+                            onChange={(value) => handleInputChange('eventInfo', 'heroImage', value)}
+                            placeholder="Upload or paste a hero image"
+                            disabled={state.loading}
+                            hint="Large visual for the event hero section."
+                        />
                         <div className="form-group">
                             <label>Registration Link</label>
                             <input
@@ -413,16 +424,14 @@ const EventForm = () => {
                                         disabled={state.loading}
                                     />
                                 </div>
-                                <div className="form-group">
-                                    <label>Photo URL</label>
-                                    <input
-                                        type="url"
-                                        value={speaker.photo}
-                                        onChange={(e) => handleArrayChange('speakers', index, 'photo', e.target.value)}
-                                        placeholder="https://images.example.com/speaker.jpg"
-                                        disabled={state.loading}
-                                    />
-                                </div>
+                                <ImageUploadInput
+                                    label="Photo"
+                                    value={speaker.photo}
+                                    onChange={(value) => handleArrayChange('speakers', index, 'photo', value)}
+                                    placeholder="Upload or paste a speaker photo"
+                                    disabled={state.loading}
+                                    hint="Headshot for this speaker."
+                                />
                                 <div className="form-group">
                                     <label>Social / Website</label>
                                     <input

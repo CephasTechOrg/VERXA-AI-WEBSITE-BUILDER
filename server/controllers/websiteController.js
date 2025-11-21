@@ -3,7 +3,7 @@ const fileService = require('../services/fileService');
 
 const generateWebsite = async (req, res, next) => {
     try {
-        const { websiteType, userData, colorScheme, customizations } = req.body;
+        const { websiteType, userData, colorScheme, customizations, uploadedAssets = [] } = req.body;
 
         console.log(`🔧 Generating ${websiteType} website...`);
         console.log(`📊 User data size: ${JSON.stringify(userData).length} characters`);
@@ -19,14 +19,22 @@ const generateWebsite = async (req, res, next) => {
         console.log(`✅ Generation successful`);
         console.log(`📄 Final code length: ${generatedCode.length} characters`);
 
+        // Build HTML variants for preview (absolute) and packaged download (relative assets)
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        const { previewHtml, packagedHtml } = await fileService.buildHtmlVariants(
+            generatedCode,
+            uploadedAssets,
+            baseUrl
+        );
+
         // Create downloadable files
-        const downloadData = await fileService.createWebsiteFiles(generatedCode, websiteType);
+        const downloadData = await fileService.createWebsiteFiles(packagedHtml, websiteType, uploadedAssets);
 
         // Send response immediately
         res.json({
             success: true,
             data: {
-                html: generatedCode,
+                html: previewHtml,
                 downloadUrl: `/api/website/download/${downloadData.id}`,
                 files: downloadData.files,
                 metadata: {
@@ -51,6 +59,32 @@ const generateWebsite = async (req, res, next) => {
     }
 };
 
+const downloadWebsite = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const archive = await fileService.createDownloadStream(id);
+
+        res.setHeader('Content-Type', 'application/zip');
+        res.setHeader('Content-Disposition', `attachment; filename="website-${id}.zip"`);
+
+        archive.on('error', (err) => {
+            console.error('Download error:', err);
+            res.status(500).end();
+        });
+
+        archive.pipe(res);
+        await archive.finalize();
+    } catch (error) {
+        console.error('Download failed:', error);
+        res.status(404).json({
+            success: false,
+            error: 'Download failed',
+            message: error.message
+        });
+    }
+};
+
 module.exports = {
-    generateWebsite
+    generateWebsite,
+    downloadWebsite
 };

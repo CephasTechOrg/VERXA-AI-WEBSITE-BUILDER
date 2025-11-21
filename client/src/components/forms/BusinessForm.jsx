@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useApp } from '../../contexts/AppContext'
 import ColorPicker from './ColorPicker'
-import GenerationProgress from './GenerationProgress'
+import ImageUploadInput from './ImageUploadInput'
 import './PortfolioForm.css'
 
 const BusinessForm = () => {
@@ -127,7 +127,8 @@ const BusinessForm = () => {
             const result = await actions.generateWebsite(
                 state.websiteType.id,
                 formData,
-                state.colorScheme
+                state.colorScheme,
+                state.uploadedAssets
             )
             actions.generateWebsiteSuccess(result)
         } catch (error) {
@@ -148,14 +149,28 @@ const BusinessForm = () => {
             </div>
 
             {state.loading && (
-                <GenerationProgress
-                    steps={[
-                        'Processing company data',
-                        'Generating layout',
-                        'Applying styles',
-                        'Finalizing website'
-                    ]}
-                />
+                <div className="generation-loading">
+                    <div className="loading-content">
+                        <div className="ai-loader">
+                            <div className="ai-bubble ai-bubble-1"></div>
+                            <div className="ai-bubble ai-bubble-2"></div>
+                            <div className="ai-bubble ai-bubble-3"></div>
+                        </div>
+                        <h3>AI is generating your website...</h3>
+                        <p>This may take up to 2 minutes. Please don't close this page.</p>
+                        <div className="loading-progress">
+                            <div className="progress-bar">
+                                <div className="progress-fill"></div>
+                            </div>
+                            <div className="loading-steps">
+                                <span className="step active">Processing company data</span>
+                                <span className="step">Generating layout</span>
+                                <span className="step">Applying styles</span>
+                                <span className="step">Finalizing website</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
 
             <form onSubmit={handleSubmit}>
@@ -255,16 +270,14 @@ const BusinessForm = () => {
                                 disabled={state.loading}
                             />
                         </div>
-                        <div className="form-group">
-                            <label>Logo URL</label>
-                            <input
-                                type="url"
-                                value={formData.companyInfo.logo}
-                                onChange={(e) => handleInputChange('companyInfo', 'logo', e.target.value)}
-                                placeholder="https://cdn.example.com/logo.png"
-                                disabled={state.loading}
-                            />
-                        </div>
+                        <ImageUploadInput
+                            label="Logo"
+                            value={formData.companyInfo.logo}
+                            onChange={(value) => handleInputChange('companyInfo', 'logo', value)}
+                            placeholder="Upload or paste a logo"
+                            disabled={state.loading}
+                            hint="Upload your brand mark or paste a hosted logo URL."
+                        />
                     </div>
                 </div>
                 <div className="form-section">
@@ -330,16 +343,14 @@ const BusinessForm = () => {
                                 disabled={state.loading}
                             />
                         </div>
-                        <div className="form-group full-width">
-                            <label>Hero Image / Video URL</label>
-                            <input
-                                type="url"
-                                value={formData.heroSection.heroImage}
-                                onChange={(e) => handleInputChange('heroSection', 'heroImage', e.target.value)}
-                                placeholder="https://images.example.com/team.jpg"
-                                disabled={state.loading}
-                            />
-                        </div>
+                        <ImageUploadInput
+                            label="Hero Image"
+                            value={formData.heroSection.heroImage}
+                            onChange={(value) => handleInputChange('heroSection', 'heroImage', value)}
+                            placeholder="Upload or paste a hero image"
+                            disabled={state.loading}
+                            hint="A strong hero image immediately sets the tone for your brand."
+                        />
                     </div>
                 </div>
 
@@ -463,16 +474,14 @@ const BusinessForm = () => {
                                         disabled={state.loading}
                                     />
                                 </div>
-                                <div className="form-group">
-                                    <label>Photo URL</label>
-                                    <input
-                                        type="url"
-                                        value={member.image}
-                                        onChange={(e) => handleArrayChange('teamMembers', index, 'image', e.target.value)}
-                                        placeholder="https://images.example.com/jordan.jpg"
-                                        disabled={state.loading}
-                                    />
-                                </div>
+                                <ImageUploadInput
+                                    label="Photo"
+                                    value={member.image}
+                                    onChange={(value) => handleArrayChange('teamMembers', index, 'image', value)}
+                                    placeholder="Upload or paste a headshot"
+                                    disabled={state.loading}
+                                    hint="Use a clear headshot to build trust with visitors."
+                                />
                                 <div className="form-group">
                                     <label>LinkedIn</label>
                                     <input

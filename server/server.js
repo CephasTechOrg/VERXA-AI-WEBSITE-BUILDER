@@ -5,6 +5,7 @@ const compression = require('compression');
 const morgan = require('morgan');
 const { v4: uuidv4 } = require('uuid');
 const rateLimit = require('express-rate-limit');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -50,6 +51,10 @@ app.get('/api/test', (req, res) => {
 // Routes
 app.use('/api/website', require('./routes/websiteRoutes'));
 app.use('/api/prompts', require('./routes/promptRoutes'));
+app.use('/api/uploads', require('./routes/uploadRoutes'));
+
+// Serve uploaded assets
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Health check
 app.get('/api/health', (req, res) => {
