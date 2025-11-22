@@ -1,14 +1,173 @@
 const path = require('path');
 const fs = require('fs').promises;
+const axios = require('axios');
 const { v4: uuidv4 } = require('uuid');
 const archiver = require('archiver');
+const { uploadDir } = require('../middleware/uploadMiddleware');
 
-const uploadsRoot = path.join(__dirname, '..', 'uploads');
+const IMAGE_KEYWORDS = ['image', 'logo', 'photo', 'avatar', 'banner', 'hero', 'thumbnail', 'cover', 'profile', 'picture'];
+const MIME_EXTENSION_MAP = {
+    'image/jpeg': '.jpg',
+    'image/png': '.png',
+    'image/gif': '.gif',
+    'image/webp': '.webp',
+    'image/svg+xml': '.svg',
+    'image/bmp': '.bmp'
+};
 
 class FileService {
     constructor() {
         this.generatedWebsites = new Map();
         this.cleanupInterval = setInterval(() => this.cleanupOldFiles(), 30 * 60 * 1000); // 30 minutes
+    }
+
+    async collectAssetsFromUserData(userData = {}, uploadedAssets = []) {
+        const existingAssets = Array.isArray(uploadedAssets) ? uploadedAssets.filter(Boolean) : [];
+        const discoveredUrls = this.extractImageUrls(userData);
+        const existingUrls = new Set(
+            existingAssets
+                .map(asset => asset?.url || asset?.relativeUrl)
+                .filter(Boolean)
+        );
+
+        const downloadedAssets = [];
+        for (const url of discoveredUrls) {
+            if (existingUrls.has(url)) continue;
+            try {
+                const asset = await this.downloadRemoteImage(url);
+                if (asset) {
+                    downloadedAssets.push(asset);
+                    existingUrls.add(url);
+                }
+            } catch (err) {
+                console.warn(`Remote asset skipped (${url}): ${err.message}`);
+            }
+        }
+
+        return [...existingAssets, ...downloadedAssets];
+    }
+
+    extractImageUrls(data) {
+        const urls = new Set();
+
+        const walk = (value, pathParts = []) => {
+            if (value === null || value === undefined) return;
+
+            if (Array.isArray(value)) {
+                value.forEach(item => walk(item, pathParts));
+                return;
+            }
+
+            if (typeof value === 'object') {
+                Object.entries(value).forEach(([key, val]) => walk(val, [...pathParts, key]));
+                return;
+            }
+
+            if (typeof value === 'string') {
+                const trimmed = value.trim();
+                if (!trimmed) return;
+                if (!this.shouldTreatValueAsImage(pathParts, trimmed)) return;
+                urls.add(trimmed);
+            }
+        };
+
+        walk(data, []);
+        return urls;
+    }
+
+    shouldTreatValueAsImage(pathParts, value) {
+        if (!this.isHttpUrl(value)) return false;
+        const hasImageKey = pathParts.some(part =>
+            IMAGE_KEYWORDS.some(keyword => part.toLowerCase().includes(keyword))
+        );
+        const looksLikeImage = this.looksLikeImagePath(value);
+        return hasImageKey || looksLikeImage;
+    }
+
+    isHttpUrl(value) {
+        try {
+            const parsed = new URL(value);
+            return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+        } catch {
+            return false;
+        }
+    }
+
+    looksLikeImagePath(url) {
+        const parsed = this.safeParseUrl(url);
+        if (!parsed) return false;
+        const pathname = parsed.pathname.toLowerCase();
+        return Object.values(MIME_EXTENSION_MAP).some(ext => pathname.endsWith(ext));
+    }
+
+    normalizeMime(mime) {
+        return mime ? mime.split(';')[0].trim().toLowerCase() : '';
+    }
+
+    guessMimeFromUrl(url) {
+        const parsed = this.safeParseUrl(url);
+        if (!parsed) return '';
+        const ext = path.extname(parsed.pathname.split('?')[0]).toLowerCase();
+        const found = Object.entries(MIME_EXTENSION_MAP).find(([, value]) => value === ext);
+        return found ? found[0] : '';
+    }
+
+    getExtensionFromMimeOrUrl(mime, url) {
+        const normalized = this.normalizeMime(mime);
+        if (normalized && MIME_EXTENSION_MAP[normalized]) {
+            return MIME_EXTENSION_MAP[normalized];
+        }
+
+        const parsed = this.safeParseUrl(url);
+        if (parsed) {
+            const cleanPath = parsed.pathname.split('?')[0];
+            const ext = path.extname(cleanPath);
+            if (ext) return ext;
+        }
+
+        return '.img';
+    }
+
+    getNameFromUrl(url) {
+        const parsed = this.safeParseUrl(url);
+        if (!parsed) return '';
+        const cleanPath = parsed.pathname.split('?')[0];
+        return path.basename(cleanPath);
+    }
+
+    safeParseUrl(value) {
+        try {
+            return new URL(value);
+        } catch {
+            return null;
+        }
+    }
+
+    async downloadRemoteImage(url) {
+        const response = await axios.get(url, { responseType: 'arraybuffer', timeout: 15000 });
+        const buffer = Buffer.from(response.data);
+        const mime = this.normalizeMime(response.headers['content-type']) || this.guessMimeFromUrl(url);
+
+        if (mime && !mime.startsWith('image/')) {
+            throw new Error('URL is not an image type');
+        }
+
+        const extension = this.getExtensionFromMimeOrUrl(mime, url);
+        const storageName = `${Date.now()}-${uuidv4()}${extension}`;
+        const storagePath = path.join(uploadDir, storageName);
+
+        await fs.writeFile(storagePath, buffer);
+
+        const downloadName = this.getNameFromUrl(url) || storageName;
+
+        return {
+            url,
+            relativeUrl: `/uploads/${storageName}`,
+            filename: downloadName,
+            mime: mime || 'application/octet-stream',
+            size: buffer.length,
+            storagePath
+        };
     }
 
     async buildHtmlVariants(html, assets = [], baseUrl = '') {
@@ -31,34 +190,7 @@ class FileService {
         let previewHtml = html;
         let packagedHtml = html;
 
-        // Ensure any direct /uploads references are included even if the client missed registering them
-        const foundUploadFiles = new Set();
-        const uploadRegex = /(?:https?:\/\/[^\\s"']+)?\\/uploads\\/([^"')\\s]+)/g;
-        let match;
-        while ((match = uploadRegex.exec(html)) !== null) {
-            foundUploadFiles.add(match[1]);
-        }
-
-        const supplementalAssets = [];
-        for (const fname of foundUploadFiles) {
-            try {
-                const storagePath = path.join(uploadsRoot, fname);
-                await fs.access(storagePath);
-                supplementalAssets.push({
-                    storagePath,
-                    filename: fname,
-                    mime: '',
-                    relativeUrl: `/uploads/${fname}`,
-                    url: `${baseUrl}/uploads/${fname}`
-                });
-            } catch (_) {
-                // ignore missing
-            }
-        }
-
-        const allAssets = [...assets, ...supplementalAssets];
-
-        for (const asset of allAssets) {
+        for (const asset of assets) {
             const safeName = asset.filename || path.basename(asset.storagePath || '');
             const packagedPath = `assets/${safeName}`;
             const assetUrls = [asset.url, asset.relativeUrl, asset.storagePath].filter(Boolean);

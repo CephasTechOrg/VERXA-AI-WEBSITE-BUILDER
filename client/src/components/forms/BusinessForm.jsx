@@ -271,12 +271,12 @@ const BusinessForm = () => {
                             />
                         </div>
                         <ImageUploadInput
-                            label="Logo"
+                            label="Company Logo"
                             value={formData.companyInfo.logo}
                             onChange={(value) => handleInputChange('companyInfo', 'logo', value)}
-                            placeholder="Upload or paste a logo"
+                            placeholder="Upload or paste your logo URL"
                             disabled={state.loading}
-                            hint="Upload your brand mark or paste a hosted logo URL."
+                            hint="Upload your logo so it is bundled with the download (or paste a link)."
                         />
                     </div>
                 </div>

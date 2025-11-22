@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useApp } from '../../contexts/AppContext'
 import ColorPicker from './ColorPicker'
-import ImageUploadInput from './ImageUploadInput'
 import './PortfolioForm.css'
 
 const NewsForm = () => {
@@ -270,22 +269,26 @@ const NewsForm = () => {
                                 disabled={state.loading}
                             />
                         </div>
-                        <ImageUploadInput
-                            label="Logo"
-                            value={formData.newsInfo.logo}
-                            onChange={(value) => handleInputChange('newsInfo', 'logo', value)}
-                            placeholder="Upload or paste a logo"
-                            disabled={state.loading}
-                            hint="Upload your newsroom logo or paste a hosted URL."
-                        />
-                        <ImageUploadInput
-                            label="Hero Image"
-                            value={formData.newsInfo.heroImage}
-                            onChange={(value) => handleInputChange('newsInfo', 'heroImage', value)}
-                            placeholder="Upload or paste a hero image"
-                            disabled={state.loading}
-                            hint="Large hero visual for the top of the site."
-                        />
+                        <div className="form-group">
+                            <label>Logo URL</label>
+                            <input
+                                type="url"
+                                value={formData.newsInfo.logo}
+                                onChange={(e) => handleInputChange('newsInfo', 'logo', e.target.value)}
+                                placeholder="https://cdn.site.com/logo.svg"
+                                disabled={state.loading}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Hero Image</label>
+                            <input
+                                type="url"
+                                value={formData.newsInfo.heroImage}
+                                onChange={(e) => handleInputChange('newsInfo', 'heroImage', e.target.value)}
+                                placeholder="https://images.site.com/newsroom.jpg"
+                                disabled={state.loading}
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -353,14 +356,16 @@ const NewsForm = () => {
                                 disabled={state.loading}
                             />
                         </div>
-                        <ImageUploadInput
-                            label="Hero Image"
-                            value={formData.featuredStory.image}
-                            onChange={(value) => handleInputChange('featuredStory', 'image', value)}
-                            placeholder="Upload or paste a feature image"
-                            disabled={state.loading}
-                            hint="Image for the lead story."
-                        />
+                        <div className="form-group">
+                            <label>Hero Image</label>
+                            <input
+                                type="url"
+                                value={formData.featuredStory.image}
+                                onChange={(e) => handleInputChange('featuredStory', 'image', e.target.value)}
+                                placeholder="https://images.site.com/feature.jpg"
+                                disabled={state.loading}
+                            />
+                        </div>
                         <div className="form-group full-width">
                             <label>Article Link</label>
                             <input
@@ -524,14 +529,16 @@ const NewsForm = () => {
                                         disabled={state.loading}
                                     />
                                 </div>
-                                <ImageUploadInput
-                                    label="Feature Image"
-                                    value={article.image}
-                                    onChange={(value) => handleArrayChange('articles', index, 'image', value)}
-                                    placeholder="Upload or paste a feature image"
-                                    disabled={state.loading}
-                                    hint="Shown on the article card."
-                                />
+                                <div className="form-group">
+                                    <label>Feature Image</label>
+                                    <input
+                                        type="url"
+                                        value={article.image}
+                                        onChange={(e) => handleArrayChange('articles', index, 'image', e.target.value)}
+                                        placeholder="https://images.site.com/transit.jpg"
+                                        disabled={state.loading}
+                                    />
+                                </div>
                                 <div className="form-group full-width">
                                     <label>Summary</label>
                                     <textarea
@@ -614,14 +621,16 @@ const NewsForm = () => {
                                         disabled={state.loading}
                                     />
                                 </div>
-                                <ImageUploadInput
-                                    label="Photo"
-                                    value={reporter.photo}
-                                    onChange={(value) => handleArrayChange('reporters', index, 'photo', value)}
-                                    placeholder="Upload or paste a reporter photo"
-                                    disabled={state.loading}
-                                    hint="Use a headshot to humanize the byline."
-                                />
+                                <div className="form-group">
+                                    <label>Photo URL</label>
+                                    <input
+                                        type="url"
+                                        value={reporter.photo}
+                                        onChange={(e) => handleArrayChange('reporters', index, 'photo', e.target.value)}
+                                        placeholder="https://images.site.com/taylor.jpg"
+                                        disabled={state.loading}
+                                    />
+                                </div>
                                 <div className="form-group full-width">
                                     <label>Short Bio</label>
                                     <textarea

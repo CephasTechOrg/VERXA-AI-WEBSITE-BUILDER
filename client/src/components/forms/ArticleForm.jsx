@@ -1,7 +1,6 @@
 ﻿import React, { useState } from 'react'
 import { useApp } from '../../contexts/AppContext'
 import ColorPicker from './ColorPicker'
-import ImageUploadInput from './ImageUploadInput'
 import './PortfolioForm.css'
 
 const ArticleForm = () => {
@@ -246,14 +245,16 @@ const ArticleForm = () => {
                                 disabled={state.loading}
                             />
                         </div>
-                        <ImageUploadInput
-                            label="Hero Image"
-                            value={formData.articleInfo.heroImage}
-                            onChange={(value) => handleInputChange('articleInfo', 'heroImage', value)}
-                            placeholder="Upload or paste a hero image"
-                            disabled={state.loading}
-                            hint="Lead visual for the article hero."
-                        />
+                        <div className="form-group">
+                            <label>Hero Image URL</label>
+                            <input
+                                type="url"
+                                value={formData.articleInfo.heroImage}
+                                onChange={(e) => handleInputChange('articleInfo', 'heroImage', e.target.value)}
+                                placeholder="https://images.example.com/feature.jpg"
+                                disabled={state.loading}
+                            />
+                        </div>
                         <div className="form-group">
                             <label>Hero Caption</label>
                             <input
@@ -335,13 +336,13 @@ const ArticleForm = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <ImageUploadInput
-                                        label="Supporting Image"
+                                    <label>Supporting Image</label>
+                                    <input
+                                        type="url"
                                         value={section.supportingImage}
-                                        onChange={(value) => handleArrayChange('sections', index, 'supportingImage', value)}
-                                        placeholder="Upload or paste a supporting image"
+                                        onChange={(e) => handleArrayChange('sections', index, 'supportingImage', e.target.value)}
+                                        placeholder="https://images.example.com/detail.jpg"
                                         disabled={state.loading}
-                                        hint="Inline image for this section."
                                     />
                                 </div>
                                 <div className="form-group">
@@ -454,14 +455,16 @@ const ArticleForm = () => {
                                 disabled={state.loading}
                             />
                         </div>
-                        <ImageUploadInput
-                            label="Headshot"
-                            value={formData.author.headshot}
-                            onChange={(value) => handleInputChange('author', 'headshot', value)}
-                            placeholder="Upload or paste an author headshot"
-                            disabled={state.loading}
-                            hint="Used in the author bio."
-                        />
+                        <div className="form-group">
+                            <label>Headshot URL</label>
+                            <input
+                                type="url"
+                                value={formData.author.headshot}
+                                onChange={(e) => handleInputChange('author', 'headshot', e.target.value)}
+                                placeholder="https://images.example.com/avery.jpg"
+                                disabled={state.loading}
+                            />
+                        </div>
                         <div className="form-group">
                             <label>Primary Social / Portfolio</label>
                             <input

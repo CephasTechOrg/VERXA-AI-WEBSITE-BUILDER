@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useApp } from '../../contexts/AppContext'
 import ColorPicker from './ColorPicker'
-import ImageUploadInput from './ImageUploadInput'
 import './PortfolioForm.css'
 
 const EventForm = () => {
@@ -263,14 +262,16 @@ const EventForm = () => {
                                 disabled={state.loading}
                             />
                         </div>
-                        <ImageUploadInput
-                            label="Hero Image"
-                            value={formData.eventInfo.heroImage}
-                            onChange={(value) => handleInputChange('eventInfo', 'heroImage', value)}
-                            placeholder="Upload or paste a hero image"
-                            disabled={state.loading}
-                            hint="Large visual for the event hero section."
-                        />
+                        <div className="form-group full-width">
+                            <label>Hero Image URL</label>
+                            <input
+                                type="url"
+                                value={formData.eventInfo.heroImage}
+                                onChange={(e) => handleInputChange('eventInfo', 'heroImage', e.target.value)}
+                                placeholder="https://images.example.com/event-hero.jpg"
+                                disabled={state.loading}
+                            />
+                        </div>
                         <div className="form-group">
                             <label>Registration Link</label>
                             <input
@@ -424,14 +425,16 @@ const EventForm = () => {
                                         disabled={state.loading}
                                     />
                                 </div>
-                                <ImageUploadInput
-                                    label="Photo"
-                                    value={speaker.photo}
-                                    onChange={(value) => handleArrayChange('speakers', index, 'photo', value)}
-                                    placeholder="Upload or paste a speaker photo"
-                                    disabled={state.loading}
-                                    hint="Headshot for this speaker."
-                                />
+                                <div className="form-group">
+                                    <label>Photo URL</label>
+                                    <input
+                                        type="url"
+                                        value={speaker.photo}
+                                        onChange={(e) => handleArrayChange('speakers', index, 'photo', e.target.value)}
+                                        placeholder="https://images.example.com/speaker.jpg"
+                                        disabled={state.loading}
+                                    />
+                                </div>
                                 <div className="form-group">
                                     <label>Social / Website</label>
                                     <input

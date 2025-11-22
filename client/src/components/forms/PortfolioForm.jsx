@@ -12,9 +12,17 @@ const PortfolioForm = () => {
             title: '',
             bio: '',
             profileImage: '',
+            logo: '',
             email: '',
             phone: '',
             location: ''
+        },
+        heroSection: {
+            headline: '',
+            subheadline: '',
+            ctaText: '',
+            ctaLink: '',
+            heroImage: ''
         },
         skills: [{ name: '', level: 'Intermediate' }],
         projects: [{ title: '', description: '', image: '', link: '' }],
@@ -286,6 +294,69 @@ const PortfolioForm = () => {
                                 disabled={state.loading}
                             />
                         </div>
+                        <ImageUploadInput
+                            label="Logo"
+                            value={formData.personalInfo.logo}
+                            onChange={(value) => handleInputChange('personalInfo', 'logo', value)}
+                            placeholder="Upload or paste your logo"
+                            disabled={state.loading}
+                            hint="Add a logo to brand your navbar and hero."
+                        />
+                    </div>
+                </div>
+
+                {/* Hero Section */}
+                <div className="form-section">
+                    <h3>Hero & CTA</h3>
+                    <div className="form-grid">
+                        <div className="form-group full-width">
+                            <label>Hero Headline</label>
+                            <input
+                                type="text"
+                                value={formData.heroSection.headline}
+                                onChange={(e) => handleInputChange('heroSection', 'headline', e.target.value)}
+                                placeholder="Showcasing the work of John Doe"
+                                disabled={state.loading}
+                            />
+                        </div>
+                        <div className="form-group full-width">
+                            <label>Hero Subheadline</label>
+                            <textarea
+                                rows="2"
+                                value={formData.heroSection.subheadline}
+                                onChange={(e) => handleInputChange('heroSection', 'subheadline', e.target.value)}
+                                placeholder="I craft delightful digital experiences across web and mobile."
+                                disabled={state.loading}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>CTA Text</label>
+                            <input
+                                type="text"
+                                value={formData.heroSection.ctaText}
+                                onChange={(e) => handleInputChange('heroSection', 'ctaText', e.target.value)}
+                                placeholder="View Projects"
+                                disabled={state.loading}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>CTA Link</label>
+                            <input
+                                type="url"
+                                value={formData.heroSection.ctaLink}
+                                onChange={(e) => handleInputChange('heroSection', 'ctaLink', e.target.value)}
+                                placeholder="https://yourportfolio.com/#projects"
+                                disabled={state.loading}
+                            />
+                        </div>
+                        <ImageUploadInput
+                            label="Hero Image"
+                            value={formData.heroSection.heroImage}
+                            onChange={(value) => handleInputChange('heroSection', 'heroImage', value)}
+                            placeholder="Upload or paste a hero image"
+                            disabled={state.loading}
+                            hint="Add a banner/cover image to headline your portfolio."
+                        />
                     </div>
                 </div>
 

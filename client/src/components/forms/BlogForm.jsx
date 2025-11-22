@@ -244,7 +244,6 @@ const BlogForm = () => {
                                 placeholder="Start Reading"
                                 disabled={state.loading}
                             />
-                            <div className="field-hint">CTA = Call to Action. This is the button text.</div>
                         </div>
                         <div className="form-group">
                             <label>Hero CTA Link</label>
@@ -255,24 +254,27 @@ const BlogForm = () => {
                                 placeholder="https://yourblog.com/latest"
                                 disabled={state.loading}
                             />
-                            <div className="field-hint">Where the hero button should send visitors.</div>
                         </div>
-                        <ImageUploadInput
-                            label="Logo"
-                            value={formData.blogInfo.logo}
-                            onChange={(value) => handleInputChange('blogInfo', 'logo', value)}
-                            placeholder="Upload or paste a logo"
-                            disabled={state.loading}
-                            hint="Upload your logo or paste a hosted URL."
-                        />
-                        <ImageUploadInput
-                            label="Hero Image"
-                            value={formData.blogInfo.heroImage}
-                            onChange={(value) => handleInputChange('blogInfo', 'heroImage', value)}
-                            placeholder="Upload or paste a hero image"
-                            disabled={state.loading}
-                            hint="Large hero visual for your landing section."
-                        />
+                        <div className="form-group">
+                            <label>Logo URL</label>
+                            <input
+                                type="url"
+                                value={formData.blogInfo.logo}
+                                onChange={(e) => handleInputChange('blogInfo', 'logo', e.target.value)}
+                                placeholder="https://cdn.example.com/logo.svg"
+                                disabled={state.loading}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Hero Image</label>
+                            <input
+                                type="url"
+                                value={formData.blogInfo.heroImage}
+                                onChange={(e) => handleInputChange('blogInfo', 'heroImage', e.target.value)}
+                                placeholder="https://images.example.com/hero.jpg"
+                                disabled={state.loading}
+                            />
+                        </div>
                     </div>
                 </div>
                 <div className="form-section">
@@ -327,14 +329,16 @@ const BlogForm = () => {
                                 disabled={state.loading}
                             />
                         </div>
-                        <ImageUploadInput
-                            label="Cover Image"
-                            value={formData.featuredPost.image}
-                            onChange={(value) => handleInputChange('featuredPost', 'image', value)}
-                            placeholder="Upload or paste a cover image"
-                            disabled={state.loading}
-                            hint="Image used on the hero feature."
-                        />
+                        <div className="form-group">
+                            <label>Cover Image</label>
+                            <input
+                                type="url"
+                                value={formData.featuredPost.image}
+                                onChange={(e) => handleInputChange('featuredPost', 'image', e.target.value)}
+                                placeholder="https://images.example.com/post.jpg"
+                                disabled={state.loading}
+                            />
+                        </div>
                         <div className="form-group full-width">
                             <label>Link / Slug</label>
                             <input
@@ -424,14 +428,16 @@ const BlogForm = () => {
                                         disabled={state.loading}
                                     />
                                 </div>
-                                    <ImageUploadInput
-                                        label="Cover Image"
+                                <div className="form-group">
+                                    <label>Cover Image</label>
+                                    <input
+                                        type="url"
                                         value={post.image}
-                                        onChange={(value) => handleArrayChange('posts', index, 'image', value)}
-                                        placeholder="Upload or paste a cover image"
+                                        onChange={(e) => handleArrayChange('posts', index, 'image', e.target.value)}
+                                        placeholder="https://images.example.com/story.jpg"
                                         disabled={state.loading}
-                                        hint="Image shown on the blog card."
                                     />
+                                </div>
                                 <div className="form-group">
                                     <label>Link / Slug</label>
                                     <input
@@ -526,14 +532,16 @@ const BlogForm = () => {
                                         disabled={state.loading}
                                     />
                                 </div>
-                                <ImageUploadInput
-                                    label="Photo / Avatar"
-                                    value={author.avatar}
-                                    onChange={(value) => handleArrayChange('authors', index, 'avatar', value)}
-                                    placeholder="Upload or paste an author photo"
-                                    disabled={state.loading}
-                                    hint="Appears with the author bio."
-                                />
+                                <div className="form-group">
+                                    <label>Photo / Avatar URL</label>
+                                    <input
+                                        type="url"
+                                        value={author.avatar}
+                                        onChange={(e) => handleArrayChange('authors', index, 'avatar', e.target.value)}
+                                        placeholder="https://images.example.com/jamie.jpg"
+                                        disabled={state.loading}
+                                    />
+                                </div>
                                 <div className="form-group">
                                     <label>Primary Social Link</label>
                                     <input
@@ -575,14 +583,16 @@ const BlogForm = () => {
                                     disabled={state.loading}
                                 />
                             </div>
-                                <ImageUploadInput
-                                    label="Author Image"
+                            <div className="form-group">
+                                <label>Author Image</label>
+                                <input
+                                    type="url"
                                     value={formData.sidebar.authorImage}
-                                    onChange={(value) => handleInputChange('sidebar', 'authorImage', value)}
-                                    placeholder="Upload or paste an author image"
+                                    onChange={(e) => handleInputChange('sidebar', 'authorImage', e.target.value)}
+                                    placeholder="https://images.example.com/author.jpg"
                                     disabled={state.loading}
-                                    hint="Shown in the sidebar bio."
                                 />
+                            </div>
                             <div className="form-group">
                                 <label>Highlight / Quote</label>
                                 <input

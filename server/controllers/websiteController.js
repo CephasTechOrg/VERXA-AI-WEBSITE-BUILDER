@@ -8,6 +8,8 @@ const generateWebsite = async (req, res, next) => {
         console.log(`🔧 Generating ${websiteType} website...`);
         console.log(`📊 User data size: ${JSON.stringify(userData).length} characters`);
 
+        const assets = await fileService.collectAssetsFromUserData(userData, uploadedAssets);
+
         // Generate website code using DeepSeek
         const generatedCode = await deepseekService.generateWebsiteCode(
             websiteType,
@@ -23,12 +25,12 @@ const generateWebsite = async (req, res, next) => {
         const baseUrl = `${req.protocol}://${req.get('host')}`;
         const { previewHtml, packagedHtml } = await fileService.buildHtmlVariants(
             generatedCode,
-            uploadedAssets,
+            assets,
             baseUrl
         );
 
         // Create downloadable files
-        const downloadData = await fileService.createWebsiteFiles(packagedHtml, websiteType, uploadedAssets);
+        const downloadData = await fileService.createWebsiteFiles(packagedHtml, websiteType, assets);
 
         // Send response immediately
         res.json({
